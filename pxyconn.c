@@ -1819,13 +1819,13 @@ pxy_bev_readcb(struct bufferevent *bev, void *arg)
 				add_line_to_content_log(line, &lb, &tail);
 			}
 			replace = pxy_http_reqhdr_filter_line(line, ctx);
-			if (replace == line) {
-				evbuffer_add_printf(outbuf, "%s\r\n", line);
-			} else if (replace) {
+			if (replace != line) {
+				free(line);
+			}
+			if (replace) {
 				evbuffer_add_printf(outbuf, "%s\r\n", replace);
 				free(replace);
 			}
-			free(line);
 			if (ctx->seen_req_header) {
 				/* request header complete */
 				if (ctx->opts->deny_ocsp) {
